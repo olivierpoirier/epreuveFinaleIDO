@@ -7,7 +7,7 @@
 
 #include <pigpio.h>
 
-#define PORT 8888
+#define PORT 3581
 #define BUFFER_SIZE 1024
 
 int main() {
@@ -35,11 +35,11 @@ int main() {
     listen(socket_local, 3);
     socket_dist = accept(socket_local, (struct sockaddr *)&address, (socklen_t*)&addrlen);
 
-    char delimiter = ";";
-    char equipe;
-    char boolOnOrOff;
-    char dividedResponse;
-    // Réception des messages
+    char * delimiter = ";";
+    char * equipe;
+    char * boolOnOrOff;
+    char dividedResponse; //pas utilisée
+    char * teamLedOn[10];
     while(1) {
         int datalen;
         // Stocker le message
@@ -51,6 +51,15 @@ int main() {
             printf("Reçu: %s", buffer);
             equipe = strtok(buffer, delimiter);
             boolOnOrOff = strtok(buffer, delimiter);
+            if(strcmp(boolOnOrOff,"0") == 0){
+                
+            } else {
+                for (int i = 0; i < sizeof(teamLedOn); i++) { 
+                    if(strcmp(teamLedOn[i],equipe) != 0){
+                        teamLedOn[i] = teamLedOn[i +1] ;
+                    }
+                } 
+            }
             fflush(stdout); 
         }
         memset(buffer, 0, BUFFER_SIZE); 
