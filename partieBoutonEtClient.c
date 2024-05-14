@@ -11,7 +11,7 @@
 #include <pigpio.h>
 
 #define PORT 2291
-#define DEST_IP "127.0.0.1"
+#define DEST_IP "10.10.0.185"
 #define MESSAGE0 "0"
 #define MESSAGE1 "1"
 
@@ -38,7 +38,7 @@ int main() {
     gpioSetMode(PINBUTTON, PI_INPUT);
 
     // Créer la connexion
-    connect(sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+    int con = connect(sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
     
     printf("Ready To send data!\n");
     bool btnHasBeenClicked = false;
@@ -49,10 +49,12 @@ int main() {
             printf("Sent 0 with TCP\n");
         } else {
             if(gpioRead(PINBUTTON) == 1 && btnHasBeenClicked) {
-                send(sock, MESSAGE1, strlen(MESSAGE1), 0);
+                int number = send(sock, MESSAGE1, strlen(MESSAGE1), 0);
                 btnHasBeenClicked = false;
                 printf("Sent 1 with TCP\n");
+                //printf("%i", number);
             }
+            //printf("con : %i\n", con);
         }
     }
     close(sock);
