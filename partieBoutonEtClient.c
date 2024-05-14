@@ -10,13 +10,13 @@
 
 #include <pigpio.h>
 
-#define PORT 3581
+#define PORT 2291
 #define DEST_IP "127.0.0.1"
 #define MESSAGE0 "0"
 #define MESSAGE1 "1"
 
 #define PINBUTTON 17
-//test : nc -lp 3581
+//test : nc -lp 2291
 
 int main() {
     int sock = 0;

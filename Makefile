@@ -11,3 +11,9 @@ relPtMS:partieMatriceEtServeur.c
 
 runPtMS:partieMatriceEtServeur
 	./partieMatriceEtServeur
+
+relMat:led8.c
+	gcc -g -o led8 led8.c -lpigpio
+
+runMat:led8
+	./led8
