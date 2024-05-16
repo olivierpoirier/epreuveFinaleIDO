@@ -10,7 +10,7 @@
 
 #include <pigpio.h>
 
-#define PORT 2291
+#define PORT 3581
 #define DEST_IP "10.10.0.185"
 #define MESSAGE0 "0"
 #define MESSAGE1 "1"

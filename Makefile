@@ -12,6 +12,12 @@ relPtMS:partieMatriceEtServeur.c
 runPtMS:partieMatriceEtServeur
 	./partieMatriceEtServeur
 
+relFinal:partieFinale.c
+	gcc -g -o partieFinale partieFinale.c -lpigpio -lpthread
+
+runFinal:partieFinale
+	./partieFinale
+
 relMat:led8.c
 	gcc -g -o led8 led8.c -lpigpio
 
