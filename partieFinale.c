@@ -130,23 +130,20 @@ void *partieMat() {
 
 
             printf("Equipe : %i\n",equipeInInt);
+            printf("onOrOff : %s\n",onOrOff);
             printf("row : %i\n",row);
             printf("col : %i\n",col);
 
 
-            if(strcmp(onOrOff,"0\n") == 0 || strcmp(onOrOff,"1\n") == 0) {
-                if(strcmp(onOrOff,"0\n") == 0){
+            if(strcmp(onOrOff,"0") == 0 || strcmp(onOrOff,"1") == 0) {
+                if(strcmp(onOrOff,"0") == 0){
                     bits = bits | lit;
                 } else {
                     bits = ~bits; // Flip: 0110 -> 1001
                     bits = bits & lit;
                 }
 
-
                 i2cWriteByteData(handle,adr,bits);
-                
-                
-
             } else {
                 printf("On or off out of range\n");
                 printf("Need to be 0 or 1\n");
