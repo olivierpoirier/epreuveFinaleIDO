@@ -9,6 +9,7 @@
 #include <pthread.h>
 
 #include <stdbool.h>
+#include <math.h>
 
 #include <pigpio.h>
 
@@ -20,7 +21,7 @@
 #define PINBUTTON 17
 //test : nc -lp 2291
 
-
+//nc 10.10.21.5 6543
 #define PORT_RECEIVE_DATA 6543
 #define BUFFER_SIZE 1024
 
@@ -53,25 +54,6 @@ void *partieBtn() {
 void *partieMat() {
 
     int handle;
-
-    int numberForMat = 0;
-    bool isTeam1On = false;
-    bool isTeam2On = false;
-    bool isTeam3On = false;
-    bool isTeam4On = false;
-    bool isTeam5On = false;
-    bool isTeam6On = false;
-    bool isTeam7On = false;
-    bool isTeam8On = false;
-    
-    bool isTeam1AlreadyAdded = false;
-    bool isTeam2AlreadyAdded = false;
-    bool isTeam3AlreadyAdded = false;
-    bool isTeam4AlreadyAdded = false;
-    bool isTeam5AlreadyAdded = false;
-    bool isTeam6AlreadyAdded = false;
-    bool isTeam7AlreadyAdded = false;
-    bool isTeam8AlreadyAdded = false;
 
     char * delimiter = ":";
     char * onOrOff;
@@ -110,14 +92,16 @@ void *partieMat() {
     listen(socket_local, 3);
     socket_dist = accept(socket_local, (struct sockaddr *)&address, (socklen_t*)&addrlen);
 
+    for (int i=0;i<0x0F;i+=2) {
+        i2cWriteByteData(handle, i, 0x00);
+    }   
     while(1) {
         int datalen;
-        // Stocker le message
         datalen = read(socket_dist, buffer, BUFFER_SIZE);
         if (datalen == 0) {
             printf("Déconnexion\n");
             break;
-        } else { // Afficher le message
+        } else {
             printf("Reçu: %s", buffer);
             valuesSepareted = strtok(buffer, delimiter);
             int comptor = 0;
@@ -134,130 +118,38 @@ void *partieMat() {
 
                 comptor +=1;
             }
-            printf("equipe : %s\n", equipe);
-            printf("onOrOff : %s\n", onOrOff);
-            if(strcmp(onOrOff,"0") == 0 || strcmp(onOrOff,"1") == 0) {
-                if(strcmp(onOrOff,"0") == 0){
-                    if(strcmp(equipe, "1") == 0 && !isTeam1AlreadyAdded) {
-                        numberForMat += 1;
-                        isTeam1On = true;
-                        isTeam1AlreadyAdded = true;
-                    }
-                    else if(strcmp(equipe, "2") == 0 && !isTeam2AlreadyAdded) {
-                        numberForMat += 2;
-                        isTeam2On = true;
-                        isTeam2AlreadyAdded = true;
-                    }
-                    else if(strcmp(equipe, "3") == 0 && !isTeam3AlreadyAdded) {
-                        numberForMat += 4;
-                        isTeam3On = true;
-                        isTeam3AlreadyAdded = true;
-                    }
-                    else if(strcmp(equipe, "4") == 0 && !isTeam4AlreadyAdded) {
-                        numberForMat += 8;
-                        isTeam4On = true;
-                        isTeam4AlreadyAdded = true;
-                    }
-                    else if(strcmp(equipe, "5") == 0 && !isTeam5AlreadyAdded) {
-                        numberForMat += 16;
-                        isTeam5On = true;
-                        isTeam5AlreadyAdded = true;
-                    }
-                    else if(strcmp(equipe, "6") == 0 && !isTeam6AlreadyAdded) {
-                        numberForMat += 32;
-                        isTeam6On = true;
-                        isTeam6AlreadyAdded = true;
-                    }
-                    else if(strcmp(equipe, "7") == 0 && !isTeam7AlreadyAdded) {
-                        numberForMat += 64;
-                        isTeam7On = true;
-                        isTeam7AlreadyAdded = true;
-                    }
-                    else if(strcmp(equipe, "8") == 0 && !isTeam8AlreadyAdded) {
-                        numberForMat += 128;
-                        isTeam8On = true;
-                        isTeam8AlreadyAdded = true;
-                    }
-                    else {
-                        if(strcmp(equipe, "1") == 0 || 
-                        strcmp(equipe, "2") == 0 ||
-                        strcmp(equipe, "3") == 0 ||
-                        strcmp(equipe, "4") == 0 ||
-                        strcmp(equipe, "5") == 0 ||
-                        strcmp(equipe, "6") == 0 ||
-                        strcmp(equipe, "7") == 0 ||
-                        strcmp(equipe, "8") == 0) {
-                            printf("LED for team %s already on\n", equipe);
-                        } else {
-                            printf("Equipe out of range\n");
-                            printf("Need to be between 1 and 8\n");
-                        }
-                    }
-                    //printf("Go In if");
-                } else {
-                    if(strcmp(equipe, "1") == 0 && isTeam1AlreadyAdded && isTeam1On) {
-                        numberForMat -= 1;
-                        isTeam1AlreadyAdded = false;
-                        isTeam1On = false;
-                    }
-                    else if(strcmp(equipe, "2") == 0 && isTeam2AlreadyAdded && isTeam2On) {
-                        numberForMat -= 2;
-                        isTeam2AlreadyAdded = false;
-                        isTeam2On = false;
-                    }
-                    else if(strcmp(equipe, "3") == 0 && isTeam3AlreadyAdded && isTeam3On) {
-                        numberForMat -= 4;
-                        isTeam3AlreadyAdded = false;
-                        isTeam3On = false;
-                    }
-                    else if(strcmp(equipe, "4") == 0 && isTeam4AlreadyAdded && isTeam4On) {
-                        numberForMat -= 8;
-                        isTeam4AlreadyAdded = false;
-                        isTeam4On = false;
-                    }
-                    else if(strcmp(equipe, "5") == 0 && isTeam5AlreadyAdded && isTeam5On) {
-                        numberForMat -= 16;
-                        isTeam5AlreadyAdded = false;
-                        isTeam5On = false;
-                    }
-                    else if(strcmp(equipe, "6") == 0 && isTeam6AlreadyAdded && isTeam6On) {
-                        numberForMat -= 32;
-                        isTeam6AlreadyAdded = false;
-                        isTeam6On = false;
-                    }
-                    else if(strcmp(equipe, "7") == 0 && isTeam7AlreadyAdded && isTeam7On) {
-                        numberForMat -= 64;
-                        isTeam7AlreadyAdded = false;
-                        isTeam7On = false;
-                    }
-                    else if(strcmp(equipe, "8") == 0 && isTeam8AlreadyAdded && isTeam8On) {
-                        numberForMat -= 128;
-                        isTeam8AlreadyAdded = false;
-                        isTeam8On = false;
-                    }
-                    else {
-                        if(strcmp(equipe, "1") == 0 || 
-                        strcmp(equipe, "2") == 0 ||
-                        strcmp(equipe, "3") == 0 ||
-                        strcmp(equipe, "4") == 0 ||
-                        strcmp(equipe, "5") == 0 ||
-                        strcmp(equipe, "6") == 0 ||
-                        strcmp(equipe, "7") == 0 ||
-                        strcmp(equipe, "8") == 0) {
-                            printf("LED for team %s already off\n", equipe);
-                        } else {
-                            printf("Equipe out of range\n");
-                            printf("Need to be between 1 and 8\n");
-                        }
+            int equipeInInt = atoi(equipe);
 
-                    }
-                    //printf("Go In else");
+            int col = (8 - equipeInInt % 8) - 1;
+            int row = equipeInInt / 8;
+            int adr = row *2;
+            int bits = 1 << col;
+            int lit = i2cReadByteData(handle, adr);
+
+            bool isProblematicData = false;
+
+
+            printf("Equipe : %i\n",equipeInInt);
+            printf("row : %i\n",row);
+            printf("col : %i\n",col);
+
+
+            if(strcmp(onOrOff,"0\n") == 0 || strcmp(onOrOff,"1\n") == 0) {
+                if(strcmp(onOrOff,"0\n") == 0){
+                    bits = bits | lit;
+                } else {
+                    bits = ~bits; // Flip: 0110 -> 1001
+                    bits = bits & lit;
                 }
-                printf("comptor : %i\n",numberForMat);
-                i2cWriteByteData(handle, 0x00, numberForMat);
+
+
+                i2cWriteByteData(handle,adr,bits);
+                
+                
+
             } else {
                 printf("On or off out of range\n");
-                printf("Need to be  or 1\n");
+                printf("Need to be 0 or 1\n");
             }
 
             fflush(stdout); 
@@ -266,6 +158,7 @@ void *partieMat() {
     }
     close(socket_dist);
     close(socket_local);
+    i2cClose(handle);
 }
 
 
@@ -307,6 +200,7 @@ int main() {
     pthread_join(t_button, NULL);
     pthread_join(t_mat, NULL);
     close(sock);
+
 
     gpioTerminate();
     return 0;

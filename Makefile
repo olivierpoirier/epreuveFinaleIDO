@@ -13,7 +13,7 @@ runPtMS:partieMatriceEtServeur
 	./partieMatriceEtServeur
 
 relFinal:partieFinale.c
-	gcc -g -o partieFinale partieFinale.c -lpigpio -lpthread
+	gcc -g -o partieFinale partieFinale.c -lpigpio -lpthread -lm
 
 runFinal:partieFinale
 	./partieFinale
